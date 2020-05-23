@@ -73,13 +73,16 @@ inline int8_t Get_Active_Note_Index(Synth_t* synth, uint16_t note)
 inline void Note_On(Synth_t* synth, uint8_t note)
 {
     uint8_t n = Get_Active_Notes_Count(synth);
+    
     int8_t exists = Get_Active_Note_Index(synth, note);
+    
     if(n < MAX_KEYS_PRESSED && exists == -1) {
         Active_Note_t active_note = {
             .step = Map_Func(note),
             .n = 0,
             .env = {
-                0,0,0,FIXED_PLUS_ONE
+                .attack = 0,
+                .release = FIXED_PLUS_ONE
             }
         };
         synth->active[n] = active_note;
@@ -120,16 +123,22 @@ inline void Change_Osc(Synth_t* synth, Osc_Type_t osc)
     }
 }
 
-inline void Process_ADSR(Synth_t* synth)
+inline void Process_Envelope(Synth_t* synth)
 {
+    /* Go over all note slots */
     for(uint8_t i=0;i<MAX_KEYS_PRESSED;++i) {
         Active_Note_t *note = &synth->active[i];
         
         if(note->step > 0) {
             
+            /* Attack will rise a bit almost to 0.99 
+               but we don't want to overshoot and end with ~ -0.99 */
             if(note->env.attack < FIXED_PLUS_ONE - synth->env.attack)
                 note->env.attack += synth->env.attack;
             
+            /* If note was released, subtract from release for note 
+               until next subtraction dont effect with ending with 
+               negative value - then just set 0 */
             if(note->cooldown) {
                 if(note->env.release >= synth->env.release)
                     note->env.release -= synth->env.release;
@@ -144,8 +153,7 @@ inline uint16_t Synth_Next_Sample(Synth_t* synth)
 {
     _Q15 sample = 0;
     _Q15 tmp_sample = 0;
-    
-    /* Add one, because we don't want to divide by 0 */
+   
     uint8_t note_count = Get_Active_Notes_Count(synth);
     
     /* Go over all notes slots */
@@ -178,6 +186,9 @@ inline uint16_t Synth_Next_Sample(Synth_t* synth)
             tmp_sample = Q15mpy(tmp_sample, note->env.attack);
             tmp_sample = Q15mpy(tmp_sample, note->env.release);
             
+            /* Add one, because we don't want to divide by 0 
+               (this should not happen - but for sure)
+             */
             sample += tmp_sample / (note_count + 1);
            
         }
@@ -185,6 +196,8 @@ inline uint16_t Synth_Next_Sample(Synth_t* synth)
 
     return sample;
 }
+
+/* Below func's as name says - just generating waveform */
 
 void Gen_Data_Sin(_Q15 *data)
 {

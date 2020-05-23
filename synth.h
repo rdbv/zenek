@@ -27,7 +27,7 @@ enum {
 } typedef Osc_Type_t;
 
 struct {
-    uint16_t attack, d, s, release;
+    uint16_t attack, release;
 } typedef Env_t;
 
 struct {
@@ -60,7 +60,7 @@ void Init_Synth(Synth_t* synth);
 void Note_On(Synth_t*, uint8_t);
 void Note_Off(Synth_t*, uint8_t);
 void Change_Osc(Synth_t*, Osc_Type_t);
-void Process_ADSR(Synth_t*);
+void Process_Envelope(Synth_t*);
 
 int8_t Get_Active_Note_Index(Synth_t*, uint16_t);
 uint8_t Get_Active_Notes_Count(Synth_t*);

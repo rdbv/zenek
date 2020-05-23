@@ -17,8 +17,8 @@ MIDI_Rx_t MIDI = {
 Synth_t Synth = {
     .osc = OSC_SINE,
     .env = {
-        .attack = 32 * 2,
-        .release = 32 * 4
+        .attack = 32 * 4,
+        .release = 32 * 6
     }, 
     .lfo0 = 32767,
     .lpf = {
@@ -74,7 +74,7 @@ void __attribute__((interrupt, no_auto_psv)) _T2Interrupt()
 {
     //PORTBbits.RB8 ^= 1;
     
-    Process_ADSR(&Synth);    
+    Process_Envelope(&Synth);    
     IFS0bits.T2IF = 0;
 }
 
@@ -84,7 +84,11 @@ int main(void)
 {
     //CORCONbits.IF = 0;
     
-    /* CPU/DAC @ 36.84 MIPS / 48 kHz  */
+    /* CPU          @ 39.93 MIPS 
+       DAC          @ 48 kHz  
+       T2 Interrupt @ ~1kHz 
+     */
+    
     Init_Osc_XT();    
     Init_DAC();
     Init_Timer1();
@@ -93,39 +97,9 @@ int main(void)
     
     Init_Synth(&Synth);
 
-    
     while(1) 
     {
-        /*
-        Active_Note_t an;
-        
-        an.step = 22;
-        an.n = 0;
-        Synth.active[0] = an;
-        __delay_ms(1000);
-        
-        an.step = 0;
-        an.n = 0;
-        Synth.active[0] = an;
-        __delay_ms(1000);
-        
-        an.step = 25;
-        an.n = 0;
-        Synth.active[0] = an;
-        __delay_ms(1000);
-        */
-        
-        //printf(".");
-        //PORTBbits.RB8 ^= 1;
-        
-        //step += 1;
-        //if(step > 256)
-        //    step = 1;  
-        
-   
-        
-        //U1TXREG = step;
-        
+
     }
 
 }
