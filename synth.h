@@ -59,6 +59,7 @@ struct {
 } typedef Synth_t;
 
 
+
 void Init_Synth(Synth_t* synth);
 void Note_On(Synth_t*, uint8_t);
 void Note_Off(Synth_t*, uint8_t);
