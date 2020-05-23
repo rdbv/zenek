@@ -1,5 +1,5 @@
-#Tiny synth, for fun - as always
-##Soon there will be more info.
+Tiny synth, for fun - as always
+Soon there will be more info.
 
 A several assumptions of this project
 * Do not use any floats, only fixed-point (Q15)
