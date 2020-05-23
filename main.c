@@ -10,6 +10,8 @@
 #include "synth.h"
 #include "midi.h"
 
+#define UART_DEBUG_MIDI 0
+
 MIDI_Rx_t MIDI = {
     .state = WAITING_CMD
 };
@@ -17,10 +19,10 @@ MIDI_Rx_t MIDI = {
 Synth_t Synth = {
     .osc = OSC_SINE,
     .env = {
-        .attack = 32 * 4,
-        .release = 32 * 6
+        .attack = 32 * 16,
+        .release = 32 * 16
     }, 
-    .lfo0 = 32767,
+
     .lpf = {
         .n = 0
     }
@@ -33,18 +35,17 @@ void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt()
     MIDI_Recv_Packet(&MIDI);    
 
     if(MIDI.msg.cmd == MIDI_NOTE_ON)
-    {
         Note_On(&Synth, MIDI.msg.data[0]);
-    }
+    
     if(MIDI.msg.cmd == MIDI_NOTE_OFF)
-    {
         Note_Off(&Synth, MIDI.msg.data[0]);
-    }
+    
     if(MIDI.msg.cmd == MIDI_CHG_OSC)
-    {
         Change_Osc(&Synth, MIDI.msg.data[0]);
-    }
-    /*
+    
+    
+#if UART_DEBUG_MIDI == 1
+    
     printf("C:%02x B0:%04d B1:%02x C:%02d", 
         MIDI.msg.cmd, 
         MIDI.msg.data[0],
@@ -57,11 +58,12 @@ void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt()
         printf(" %04x ", Synth.active[i].step);
     }
     printf("\r\n");
-    */
+    
+#endif
+    
     if(U1STAbits.OERR == 1)
-    {
         U1STAbits.OERR = 0;
-    }
+    
 }
 
 void __attribute__((interrupt, no_auto_psv)) _DAC1LInterrupt()
@@ -71,9 +73,7 @@ void __attribute__((interrupt, no_auto_psv)) _DAC1LInterrupt()
 }
 
 void __attribute__((interrupt, no_auto_psv)) _T2Interrupt()
-{
-    //PORTBbits.RB8 ^= 1;
-    
+{   
     Process_Envelope(&Synth);    
     IFS0bits.T2IF = 0;
 }
@@ -82,9 +82,8 @@ extern void test();
 
 int main(void) 
 {
-    //CORCONbits.IF = 0;
-    
-    /* CPU          @ 39.93 MIPS 
+    /* 
+       CPU          @ 39.93 MIPS 
        DAC          @ 48 kHz  
        T2 Interrupt @ ~1kHz 
      */

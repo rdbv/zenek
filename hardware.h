@@ -2,26 +2,17 @@
 #define	HARDWARE_H
 
 #define FCY      39936000
-//36864000
 
 #define BAUDRATE 38400
 #define BRGVAL   ((FCY/BAUDRATE)/16)-1
 
 #define PLL_FBD  63
-//40
 #define PLL_PRE  3
-//2
 #define PLL_POST 2
-//2
-
 #define DAC_DIV  13
 
-
-#define T1_PRESCALER 256
-#define T1_FRQ(f) (FCY/T1_PRESCALER/f)
-#define T1_FRQX 120
-
-// 12
+/* f - Frequency in Hz, PRESCALER - timer presc. */
+#define TIMER_FREQUENCY(f, PRESCALER) (FCY/PRESCALER/f)
 
 #include <dac.h>
 #include <stdint.h>

@@ -31,6 +31,10 @@ struct {
 } typedef Env_t;
 
 struct {
+    uint16_t value;
+} typedef LFO_t;
+
+struct {
     _Q15 data[LPF_FILTER_SIZE];
     _Q15 last;
     uint16_t n;
@@ -46,11 +50,10 @@ struct {
 struct {
     Osc_Type_t osc;
     Env_t env;
+    LFO_t lfo;
     LP_Filter_t lpf;
     
     _Q15 buffer[SMP_BUF_SIZE];   
-    _Q15 lfo0;
-    _Q15 lfo_i0;
     
     Active_Note_t active[MAX_KEYS_PRESSED];
 } typedef Synth_t;
@@ -61,6 +64,7 @@ void Note_On(Synth_t*, uint8_t);
 void Note_Off(Synth_t*, uint8_t);
 void Change_Osc(Synth_t*, Osc_Type_t);
 void Process_Envelope(Synth_t*);
+void Process_LFO(Synth_t*);
 
 int8_t Get_Active_Note_Index(Synth_t*, uint16_t);
 uint8_t Get_Active_Notes_Count(Synth_t*);

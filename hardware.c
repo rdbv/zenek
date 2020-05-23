@@ -49,8 +49,9 @@ void Init_Timer1()
     T2CONbits.TCS = 0;
     T2CONbits.TGATE = 0;
     T2CONbits.TCKPS = 0b00;
+
     TMR2 = 0x0000;
-    PR2 = 39936;
+    PR2 = TIMER_FREQUENCY(1000, 1);
     
     IPC1bits.T2IP = 0x01;
     IFS0bits.T2IF = 0;
