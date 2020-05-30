@@ -17,9 +17,10 @@
                    projectFiles="true">
       <itemPath>main.c</itemPath>
       <itemPath>hardware.c</itemPath>
-      <itemPath>utils.s</itemPath>
       <itemPath>midi.c</itemPath>
       <itemPath>synth.c</itemPath>
+      <itemPath>synthesis.s</itemPath>
+      <itemPath>synthesis.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -72,9 +73,9 @@
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C30>
-        <property key="code-model" value="default"/>
+        <property key="code-model" value="small-code"/>
         <property key="const-model" value="default"/>
-        <property key="data-model" value="default"/>
+        <property key="data-model" value="small-data"/>
         <property key="disable-instruction-scheduling" value="false"/>
         <property key="enable-all-warnings" value="true"/>
         <property key="enable-ansi-std" value="false"/>

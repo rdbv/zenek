@@ -7,8 +7,8 @@
 #define BRGVAL   ((FCY/BAUDRATE)/16)-1
 
 #define PLL_FBD  63
-#define PLL_PRE  3
-#define PLL_POST 2
+#define PLL_PRE  1
+#define PLL_POST 0
 #define DAC_DIV  13
 
 /* f - Frequency in Hz, PRESCALER - timer presc. */

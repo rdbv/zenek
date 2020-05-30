@@ -31,6 +31,7 @@ enum {
 
 struct {
     uint8_t cmd;
+    uint8_t channel;
     uint8_t data[2];
 } typedef MIDI_Msg_t;
 
@@ -42,6 +43,5 @@ struct {
 void MIDI_Recv_Packet(MIDI_Rx_t*);
 void MIDI_Recv_Initial(MIDI_Rx_t*);
 void MIDI_Recv_Data(MIDI_Rx_t*);
-void MIDI_Dump_Packet(MIDI_Msg_t*);
 
 #endif

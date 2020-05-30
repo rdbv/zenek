@@ -1,55 +1,30 @@
 #include "synth.h"
 
-const uint16_t notes[24] = {
-    22, // C4
-    24, // C#4
-    25, // D4
-    27, // D#4
-    28, // E4
-    30, // F4
-    32, // F#4
-    33, // G4
-    35, // G#4
-    38, // A4
-    40, // A#4
-    42, // B4
-    45, // C5
-    47, // C#5
-    50, // D5
-    53, // D#5
-    56, // E5
-    60, // F5
-    63, // F#5
-    67, // G5
-    71, // G#5
-    75, // A5
-    80, // A#5
-    84, // B5
+/* Channels lookup */
+_Q15 (*channels[MAX_CHANNELS])(_Q15) = {
+    _Q15saw,
+    _Q15square,
+    _Q15sinPI,
+    _Q15triangle
 };
 
-inline _Q15 Q15mpy(_Q15 a, _Q15 b)
-{	
-    _Q15 result = 0;
-    volatile register int accA __asm("A");
-    accA = __builtin_clr();
-    
-    accA = __builtin_mpy(a, b, 0, 0, 0, 0, 0, 0);
-    result = __builtin_sac(accA ,0);
+/* Note frequency lookup */
+const _Q15 notes[84] = {
+      44,  47,  50,  53,  56,  59,  63,  66,  70,  75,  79,  84,  // A1 A#1 B1 C1 C#1 D1 D#1 E1 F1 F#1 G1 G#1 
+      89,  94, 100, 106, 112, 119, 126, 133, 141, 150, 159, 168,  // A2 A#2 B2 C2 C#2 D2 D#2 E2 F2 F#2 G2 G#2 
+     178, 189, 200, 212, 225, 238, 252, 267, 283, 300, 318, 337,  // A3 A#3 B3 C3 C#3 D3 D#3 E3 F3 F#3 G3 G#3 
+     357, 378, 400, 424, 450, 476, 505, 535, 567, 600, 636, 674,  // A4 A#4 B4 C4 C#4 D4 D#4 E4 F4 F#4 G4 G#4 
+     714, 756, 801, 849, 900, 953,1010,1070,1134,1201,1272,1348,  // A5 A#5 B5 C5 C#5 D5 D#5 E5 F5 F#5 G5 G#5 
+    1428,1513,1603,1699,1800,1907,2020,2140,2268,2402,2545,2697,  // A6 A#6 B6 C6 C#6 D6 D#6 E6 F6 F#6 G6 G#6 
+    2857,3027,3207,3398,3600,3814,4041,4281,4536,4805,5091,5394,  // A7 A#7 B7 C7 C#7 D7 D#7 E7 F7 F#7 G7 G#7 
+};
 
-    return result;
-}
-
-inline uint16_t Map_Func(uint8_t key)
+inline uint16_t __attribute__((always_inline)) Map_Func(uint8_t key)
 {
-    return notes[key - 60];
+    return notes[key - 24];
 }
 
-void Init_Synth(Synth_t* synth)
-{
-    Change_Osc(synth, synth->osc);
-}
-
-inline uint8_t Get_Active_Notes_Count(Synth_t* synth)
+inline uint8_t __attribute__((always_inline)) Get_Active_Notes_Count(Synth_t* synth)
 {
     uint8_t count = 0;
     
@@ -70,57 +45,34 @@ inline int8_t Get_Active_Note_Index(Synth_t* synth, uint16_t note)
     return -1;
 }
 
-inline void Note_On(Synth_t* synth, uint8_t note)
-{
-    uint8_t n = Get_Active_Notes_Count(synth);
-    
-    int8_t exists = Get_Active_Note_Index(synth, note);
-    
-    if(n < MAX_KEYS_PRESSED && exists == -1) {
-        Active_Note_t active_note = {
-            .step = Map_Func(note),
-            .n = 0,
-            .env = {
-                .attack = 0,
-                .release = FIXED_PLUS_ONE
-            }
-        };
-        synth->active[n] = active_note;
+inline void Note_On(Synth_t* synth, MIDI_Msg_t* msg)
+{    
+    for(uint8_t i=0;i<MAX_KEYS_PRESSED;++i) {
+        Active_Note_t *note = &synth->active[i];
+        
+        if(note->step == 0) {
+            note->step = Map_Func(msg->data[0]);
+            note->n = 0;
+            note->channel = msg->channel;
+            note->velocity = msg->data[1];
+            note->env.attack = 0;
+            break;
+        }
+        
     }
 }
 
-inline void Note_Off(Synth_t* synth, uint8_t note)
+inline void Note_Off(Synth_t* synth, MIDI_Msg_t* msg)
 {
     for(uint8_t i=0;i<MAX_KEYS_PRESSED;++i) {
         Active_Note_t *active_note = &synth->active[i];
         
-        if(active_note->step == Map_Func(note)) {            
-            active_note->env.release = active_note->env.attack;
-            active_note->cooldown = 1;
-        }
-    }
-}
-
-inline void Change_Osc(Synth_t* synth, Osc_Type_t osc)
-{
-    switch(osc)
-    {
-        case OSC_SINE:
-            Gen_Data_Sin(synth->buffer);
-            break;
-        case OSC_SQUARE:
-            Gen_Data_Square(synth->buffer);
-            break;
-        case OSC_SAW:
-            Gen_Data_Saw(synth->buffer);
-            break;
-        case OSC_TRIANGLE:
-            Gen_Data_Triangle(synth->buffer);
-            break;
-        case OSC_NOISE:
-            Gen_Data_Noise(synth->buffer);
-            break;
-    }
+        if(active_note->step == Map_Func(msg->data[0]) 
+        && active_note->channel == msg->channel) {  
+            //active_note->env.release = active_note->env.attack;
+            active_note->state = NOTE_COOLDOWN;
+        }   
+    } 
 }
 
 inline void Process_Envelope(Synth_t* synth)
@@ -128,9 +80,7 @@ inline void Process_Envelope(Synth_t* synth)
     /* Go over all note slots */
     for(uint8_t i=0;i<MAX_KEYS_PRESSED;++i) {
         Active_Note_t *note = &synth->active[i];
-        
         if(note->step > 0) {
-            
             /* Attack will rise a bit almost to 0.99 
                but we don't want to overshoot and end with ~ -0.99 */
             if(note->env.attack < FIXED_PLUS_ONE - synth->env.attack)
@@ -139,7 +89,7 @@ inline void Process_Envelope(Synth_t* synth)
             /* If note was released, subtract from release for note 
                until next subtraction dont effect with ending with 
                negative value - then just set 0 */
-            if(note->cooldown) {
+            if(note->state == NOTE_COOLDOWN) {
                 if(note->env.release >= synth->env.release)
                     note->env.release -= synth->env.release;
                 else
@@ -151,121 +101,66 @@ inline void Process_Envelope(Synth_t* synth)
 
 inline uint16_t Synth_Next_Sample(Synth_t* synth)
 {
+    uint8_t note_count = Get_Active_Notes_Count(synth);    
     _Q15 sample = 0;
-    _Q15 tmp_sample = 0;
-   
-    uint8_t note_count = Get_Active_Notes_Count(synth);
     
     /* Go over all notes slots */
     for(uint8_t i=0;i<MAX_KEYS_PRESSED;++i) {
         
+        _Q15 tmp_sample = 0;
         Active_Note_t *note = &synth->active[i];
         
         /* If step != 0 then note is playing now */
-        if(note->step > 0) {
+        if(note->step != 0) {
+            tmp_sample = (*channels[note->channel])(note->n);
+            note->n += note->step;
+
+            tmp_sample = _Q15mpy(tmp_sample, note->velocity * 255 );
+            tmp_sample = _Q15mpy(tmp_sample, note->env.attack);
             
-            /* Increase phase acc and get sample value */
-            note->n = (note->n + note->step) % SMP_BUF_SIZE;
-            tmp_sample = synth->buffer[note->n];
+            //tmp_sample = _Q15mpy(tmp_sample, note->env.release);
             
-            /* Cooldown - note released, so we wait a little bit longer for 
-               - zero-crossing point, to avoid knocks 
-               - release env finish
-             */
-            if(note->cooldown && 
-               tmp_sample == synth->buffer[0] && 
-               note->env.release == 0) {
-                note->n = 0;
-                note->step = 0;
-                note->cooldown = 0;    
-            }
-            
-            /* Multiply sample by attack (rising from start) 
-               and release (at start set to 0.99, and falling from 
-               key release moment) */
-            tmp_sample = Q15mpy(tmp_sample, note->env.attack);
-            tmp_sample = Q15mpy(tmp_sample, note->env.release);
-            
-            /* Add one, because we don't want to divide by 0 
-               (this should not happen - but for sure)
-             */
             sample += tmp_sample / (note_count + 1);
-           
+
+            if(note->state == NOTE_COOLDOWN) {
+                note->step = 0;
+                note->state = NOTE_IDLE;  
+            }
         }
     }
 
     return sample;
 }
 
-/* Below func's as name says - just generating waveform */
+inline _Q15 __attribute__((always_inline)) _Q15mpy(_Q15 a, _Q15 b)
+{	
+    _Q15 result = 0;
+    volatile register int accA __asm("A");
+    accA = __builtin_clr();
+    
+    accA = __builtin_mpy(a, b, 0, 0, 0, 0, 0, 0);
+    result = __builtin_sac(accA ,0);
 
-void Gen_Data_Sin(_Q15 *data)
-{
-    const _Q15 step = (FIXED_FULL_SCALE / SMP_BUF_SIZE);
-    
-    for(short i=0, x = FIXED_MINUS_ONE;i<SMP_BUF_SIZE;++i) {
-        *(data++) = _Q15sinPI(x);
-        x += step;
-    }
-    
+    return result;
 }
 
-void Gen_Data_Square(_Q15 *data)
+inline _Q15 __attribute__((always_inline)) _Q15square(_Q15 x)
 {
-    const _Q15 step = (FIXED_FULL_SCALE / SMP_BUF_SIZE);
-    const short half = SMP_BUF_SIZE / 2;
-    
-    for(short i=0, x = FIXED_MINUS_ONE;i<SMP_BUF_SIZE;++i) {
-        if(i <= half)
-            *(data++) = FIXED_MINUS_ONE;
-        if(i > half)
-            *(data++) = FIXED_PLUS_ONE;
-        
-        x += step;
-    }
-    
+    if(x <= 0)
+        return FIXED_MINUS_ONE;
+    else
+        return FIXED_PLUS_ONE;
 }
 
-void Gen_Data_Saw(_Q15 *data)
+inline _Q15 __attribute__((always_inline)) _Q15saw(_Q15 x)
 {
-    const _Q15 step = (FIXED_FULL_SCALE/SMP_BUF_SIZE);
-   
-    for(short i=0, x = FIXED_MINUS_ONE;i<SMP_BUF_SIZE;i++) {
-        *(data++) = x;
-        x += step;
-    }
+    return x;
 }
 
-void Gen_Data_Triangle(_Q15 *data)
+inline _Q15 __attribute__((always_inline)) _Q15triangle(_Q15 x)
 {
-    const short one_three = SMP_BUF_SIZE / 3;
-    const short a = FIXED_PLUS_ONE/one_three;
-    short i = 0;
-    _Q15 x = 0;
-    
-    for(i=0;i<one_three;++i) {
-        *(data++) = x;
-        x += a;
-    }
-    
-    for(i=0;i<one_three;++i) {
-        *(data++) = x;
-        x -= 2*a;
-    }
-    
-    for(i=0;i<one_three+2;++i) {
-        *(data++) = x;
-        x += a;
-    }
-}
-
-void Gen_Data_Noise(_Q15 *data)
-{
-    const _Q15 step = ( FIXED_FULL_SCALE / SMP_BUF_SIZE );
-    
-    _Q15 x = FIXED_MINUS_ONE;
-    for(short i=0;i<SMP_BUF_SIZE;++i) {
-        *(data++) = _Q15random(x);
-        x += step;
-    }
+    if(x <= 0)
+        return x;
+    else
+        return 0-x;
 }

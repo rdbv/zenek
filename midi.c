@@ -1,15 +1,20 @@
 #include "midi.h"
 
-void MIDI_Recv_Packet(MIDI_Rx_t* rx)
+inline void MIDI_Recv_Packet(MIDI_Rx_t* rx)
 {
     MIDI_Recv_Initial(rx);
     MIDI_Recv_Data(rx);      
 }
 
-inline void MIDI_Recv_Initial(MIDI_Rx_t* rx)
+inline void __attribute__((always_inline)) MIDI_Recv_Initial(MIDI_Rx_t* rx)
 {
-    uint8_t cmd = U1RXREG & (MIDI_CMD_MASK);
+    uint8_t byte = U1RXREG;
+    
+    uint8_t cmd = byte & (MIDI_CMD_MASK);
+    uint8_t chn = byte & (MIDI_CHANNEL_MASK);
+    
     rx->msg.cmd = cmd;
+    rx->msg.channel = chn;
     
     switch(cmd)
     {
@@ -25,7 +30,7 @@ inline void MIDI_Recv_Initial(MIDI_Rx_t* rx)
     }
 }
 
-inline void MIDI_Recv_Data(MIDI_Rx_t* rx)
+inline void __attribute__((always_inline)) MIDI_Recv_Data(MIDI_Rx_t* rx)
 {
     switch(rx->state)
     {
@@ -41,12 +46,4 @@ inline void MIDI_Recv_Data(MIDI_Rx_t* rx)
         default:
             break;
     }
-}
-
-inline void MIDI_Dump_Packet(MIDI_Msg_t* msg)
-{
-    printf("C:%02x B0:%02x B1:%02x\r\n", 
-            msg->cmd, 
-            msg->data[0],
-            msg->data[1]);
 }

@@ -31,10 +31,10 @@ void Init_Osc_RC()
  */
 void Init_Osc_XT()
 {
-    PLLFBD = PLL_FBD - 2;
+    PLLFBD = PLL_FBD;
     
-    CLKDIVbits.PLLPRE = PLL_PRE - 2; 
-    CLKDIVbits.PLLPOST = PLL_POST - 2; 
+    CLKDIVbits.PLLPRE = PLL_PRE; 
+    CLKDIVbits.PLLPOST = PLL_POST; 
     
     __builtin_write_OSCCONH(0x03);
     __builtin_write_OSCCONL(OSCCON | 0x01);
@@ -53,7 +53,7 @@ void Init_Timer1()
     TMR2 = 0x0000;
     PR2 = TIMER_FREQUENCY(1000, 1);
     
-    IPC1bits.T2IP = 0x01;
+    IPC1bits.T2IP = 1;
     IFS0bits.T2IF = 0;
     IEC0bits.T2IE = 1;
     

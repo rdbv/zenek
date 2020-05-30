@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=main.c hardware.c utils.s midi.c synth.c
+SOURCEFILES_QUOTED_IF_SPACED=main.c hardware.c midi.c synth.c synthesis.s
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/hardware.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/midi.o ${OBJECTDIR}/synth.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/hardware.o.d ${OBJECTDIR}/utils.o.d ${OBJECTDIR}/midi.o.d ${OBJECTDIR}/synth.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/main.o ${OBJECTDIR}/hardware.o ${OBJECTDIR}/midi.o ${OBJECTDIR}/synth.o ${OBJECTDIR}/synthesis.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/main.o.d ${OBJECTDIR}/hardware.o.d ${OBJECTDIR}/midi.o.d ${OBJECTDIR}/synth.o.d ${OBJECTDIR}/synthesis.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/hardware.o ${OBJECTDIR}/utils.o ${OBJECTDIR}/midi.o ${OBJECTDIR}/synth.o
+OBJECTFILES=${OBJECTDIR}/main.o ${OBJECTDIR}/hardware.o ${OBJECTDIR}/midi.o ${OBJECTDIR}/synth.o ${OBJECTDIR}/synthesis.o
 
 # Source Files
-SOURCEFILES=main.c hardware.c utils.s midi.c synth.c
+SOURCEFILES=main.c hardware.c midi.c synth.c synthesis.s
 
 
 
@@ -99,28 +99,28 @@ ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/main.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
+	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/main.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -msmall-code -msmall-data -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
 	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/hardware.o: hardware.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/hardware.o.d 
 	@${RM} ${OBJECTDIR}/hardware.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  hardware.c  -o ${OBJECTDIR}/hardware.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/hardware.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
+	${MP_CC} $(MP_EXTRA_CC_PRE)  hardware.c  -o ${OBJECTDIR}/hardware.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/hardware.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -msmall-code -msmall-data -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
 	@${FIXDEPS} "${OBJECTDIR}/hardware.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/midi.o: midi.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/midi.o.d 
 	@${RM} ${OBJECTDIR}/midi.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  midi.c  -o ${OBJECTDIR}/midi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/midi.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
+	${MP_CC} $(MP_EXTRA_CC_PRE)  midi.c  -o ${OBJECTDIR}/midi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/midi.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -msmall-code -msmall-data -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
 	@${FIXDEPS} "${OBJECTDIR}/midi.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/synth.o: synth.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/synth.o.d 
 	@${RM} ${OBJECTDIR}/synth.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  synth.c  -o ${OBJECTDIR}/synth.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/synth.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
+	${MP_CC} $(MP_EXTRA_CC_PRE)  synth.c  -o ${OBJECTDIR}/synth.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/synth.o.d"      -g -D__DEBUG     -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -msmall-code -msmall-data -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
 	@${FIXDEPS} "${OBJECTDIR}/synth.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 else
@@ -128,28 +128,28 @@ ${OBJECTDIR}/main.o: main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/main.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
+	${MP_CC} $(MP_EXTRA_CC_PRE)  main.c  -o ${OBJECTDIR}/main.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/main.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -msmall-code -msmall-data -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
 	@${FIXDEPS} "${OBJECTDIR}/main.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/hardware.o: hardware.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/hardware.o.d 
 	@${RM} ${OBJECTDIR}/hardware.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  hardware.c  -o ${OBJECTDIR}/hardware.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/hardware.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
+	${MP_CC} $(MP_EXTRA_CC_PRE)  hardware.c  -o ${OBJECTDIR}/hardware.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/hardware.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -msmall-code -msmall-data -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
 	@${FIXDEPS} "${OBJECTDIR}/hardware.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/midi.o: midi.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/midi.o.d 
 	@${RM} ${OBJECTDIR}/midi.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  midi.c  -o ${OBJECTDIR}/midi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/midi.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
+	${MP_CC} $(MP_EXTRA_CC_PRE)  midi.c  -o ${OBJECTDIR}/midi.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/midi.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -msmall-code -msmall-data -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
 	@${FIXDEPS} "${OBJECTDIR}/midi.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 ${OBJECTDIR}/synth.o: synth.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/synth.o.d 
 	@${RM} ${OBJECTDIR}/synth.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE)  synth.c  -o ${OBJECTDIR}/synth.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/synth.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
+	${MP_CC} $(MP_EXTRA_CC_PRE)  synth.c  -o ${OBJECTDIR}/synth.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/synth.o.d"        -g -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -msmall-code -msmall-data -O2 -funroll-loops -msmart-io=1 -Wall -msfr-warn=off   -std=c99 -finline -Wvolatile-register-var  -mdfp=${DFP_DIR}/xc16
 	@${FIXDEPS} "${OBJECTDIR}/synth.o.d" $(SILENT)  -rsi ${MP_CC_DIR}../ 
 	
 endif
@@ -157,20 +157,20 @@ endif
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assemble
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/utils.o: utils.s  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/synthesis.o: synthesis.s  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/utils.o.d 
-	@${RM} ${OBJECTDIR}/utils.o 
-	${MP_CC} $(MP_EXTRA_AS_PRE)  utils.s  -o ${OBJECTDIR}/utils.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -D__DEBUG   -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  -Wa,-MD,"${OBJECTDIR}/utils.o.d",--defsym=__MPLAB_BUILD=1,--defsym=__ICD2RAM=1,--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,,-g,--no-relax$(MP_EXTRA_AS_POST)  -mdfp=${DFP_DIR}/xc16
-	@${FIXDEPS} "${OBJECTDIR}/utils.o.d"  $(SILENT)  -rsi ${MP_CC_DIR}../  
+	@${RM} ${OBJECTDIR}/synthesis.o.d 
+	@${RM} ${OBJECTDIR}/synthesis.o 
+	${MP_CC} $(MP_EXTRA_AS_PRE)  synthesis.s  -o ${OBJECTDIR}/synthesis.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -D__DEBUG   -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  -Wa,-MD,"${OBJECTDIR}/synthesis.o.d",--defsym=__MPLAB_BUILD=1,--defsym=__ICD2RAM=1,--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,,-g,--no-relax$(MP_EXTRA_AS_POST)  -mdfp=${DFP_DIR}/xc16
+	@${FIXDEPS} "${OBJECTDIR}/synthesis.o.d"  $(SILENT)  -rsi ${MP_CC_DIR}../  
 	
 else
-${OBJECTDIR}/utils.o: utils.s  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/synthesis.o: synthesis.s  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/utils.o.d 
-	@${RM} ${OBJECTDIR}/utils.o 
-	${MP_CC} $(MP_EXTRA_AS_PRE)  utils.s  -o ${OBJECTDIR}/utils.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  -Wa,-MD,"${OBJECTDIR}/utils.o.d",--defsym=__MPLAB_BUILD=1,-g,--no-relax$(MP_EXTRA_AS_POST)  -mdfp=${DFP_DIR}/xc16
-	@${FIXDEPS} "${OBJECTDIR}/utils.o.d"  $(SILENT)  -rsi ${MP_CC_DIR}../  
+	@${RM} ${OBJECTDIR}/synthesis.o.d 
+	@${RM} ${OBJECTDIR}/synthesis.o 
+	${MP_CC} $(MP_EXTRA_AS_PRE)  synthesis.s  -o ${OBJECTDIR}/synthesis.o  -c -mcpu=$(MP_PROCESSOR_OPTION)  -omf=elf -DXPRJ_default=$(CND_CONF)  -legacy-libc  -Wa,-MD,"${OBJECTDIR}/synthesis.o.d",--defsym=__MPLAB_BUILD=1,-g,--no-relax$(MP_EXTRA_AS_POST)  -mdfp=${DFP_DIR}/xc16
+	@${FIXDEPS} "${OBJECTDIR}/synthesis.o.d"  $(SILENT)  -rsi ${MP_CC_DIR}../  
 	
 endif
 

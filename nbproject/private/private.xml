@@ -6,12 +6,13 @@
             <file>file:/home/void/MPLABXProjects/Synth.X/hardware.c</file>
             <file>file:/home/void/MPLABXProjects/Synth.X/synth.c</file>
             <file>file:/home/void/MPLABXProjects/Synth.X/midi.h</file>
+            <file>file:/home/void/MPLABXProjects/Synth.X/synthesis.s</file>
             <file>file:/home/void/MPLABXProjects/Synth.X/hardware.h</file>
             <file>file:/home/void/MPLABXProjects/Synth.X/midi.c</file>
             <file>file:/opt/microchip/xc16/v1.50/support/generic/h/libq.h</file>
-            <file>file:/home/void/MPLABXProjects/Synth.X/utils.s</file>
             <file>file:/home/void/MPLABXProjects/Synth.X/main.c</file>
             <file>file:/home/void/MPLABXProjects/Synth.X/synth.h</file>
+            <file>file:/home/void/MPLABXProjects/Synth.X/synthesis.h</file>
         </group>
     </open-files>
 </project-private>

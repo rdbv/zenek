@@ -13,14 +13,14 @@
 #define UART_DEBUG_MIDI 0
 
 MIDI_Rx_t MIDI = {
-    .state = WAITING_CMD
+    .state = WAITING_CMD,
 };
 
 Synth_t Synth = {
-    .osc = OSC_SINE,
+
     .env = {
-        .attack = 32 * 16,
-        .release = 32 * 16
+        .attack = 32 * 8,
+        .release = 32 * 3
     }, 
 
     .lpf = {
@@ -29,47 +29,41 @@ Synth_t Synth = {
 };
         
 void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt()
-{
-    IFS0bits.U1RXIF = 0;
-    
+{    
     MIDI_Recv_Packet(&MIDI);    
-
-    if(MIDI.msg.cmd == MIDI_NOTE_ON)
-        Note_On(&Synth, MIDI.msg.data[0]);
     
-    if(MIDI.msg.cmd == MIDI_NOTE_OFF)
-        Note_Off(&Synth, MIDI.msg.data[0]);
-    
-    if(MIDI.msg.cmd == MIDI_CHG_OSC)
-        Change_Osc(&Synth, MIDI.msg.data[0]);
+    if(MIDI.msg.cmd == MIDI_NOTE_ON && MIDI.msg.data[1] == 0x00) {
+        Note_Off(&Synth, &MIDI.msg);
+    }   
+    else if(MIDI.msg.cmd == MIDI_NOTE_ON) {
+        Note_On(&Synth, &MIDI.msg);
+    } 
+    else if(MIDI.msg.cmd == MIDI_NOTE_OFF) {
+        Note_Off(&Synth, &MIDI.msg);
+    }
     
     
 #if UART_DEBUG_MIDI == 1
     
-    printf("C:%02x B0:%04d B1:%02x C:%02d", 
+    printf("C:%02x B0:%04d B1:%02x C:%02d\r\n", 
         MIDI.msg.cmd, 
         MIDI.msg.data[0],
         MIDI.msg.data[1],
         Get_Active_Notes_Count(&Synth) );
-    
-    
-    for(uint8_t i=0;i<MAX_KEYS_PRESSED;++i)
-    {
-        printf(" %04x ", Synth.active[i].step);
-    }
-    printf("\r\n");
+
     
 #endif
-    
-    if(U1STAbits.OERR == 1)
-        U1STAbits.OERR = 0;
-    
+
+    //if(U1STAbits.OERR == 1)
+    //    U1STAbits.OERR = 0;
+
+    IFS0bits.U1RXIF = 0;
 }
 
 void __attribute__((interrupt, no_auto_psv)) _DAC1LInterrupt()
 {
-    IFS4bits.DAC1LIF = 0;    
     DAC1LDAT = Synth_Next_Sample(&Synth);
+    IFS4bits.DAC1LIF = 0;
 }
 
 void __attribute__((interrupt, no_auto_psv)) _T2Interrupt()
@@ -90,11 +84,9 @@ int main(void)
     
     Init_Osc_XT();    
     Init_DAC();
-    Init_Timer1();
+    Init_Timer1(); 
     Init_UART();    
     Init_GPIO();
-    
-    Init_Synth(&Synth);
 
     while(1) 
     {
