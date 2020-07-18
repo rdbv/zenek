@@ -81,7 +81,7 @@ void Init_DAC()
     IFS4bits.DAC1LIF = 0;               // Clear DAC Interrupt flags 
     IEC4bits.DAC1LIE = 1;
     
-    DAC1DFLT = 0;                  // Default DAC Value 
+    DAC1DFLT = 0;                       // Default DAC Value 
     
     DAC1CONbits.DACEN = 1;              // Default DAC Value 
 }

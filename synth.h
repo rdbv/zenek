@@ -13,6 +13,7 @@
 #define FIXED_FULL_SCALE 65536
 
 #define MAX_KEYS_PRESSED    8
+#define NOTES_COUNT         84
 #define MAX_CHANNELS        4
 #define LPF_FILTER_SIZE     16
 
@@ -27,18 +28,21 @@ struct {
 } typedef Env_t;
 
 struct {
+    uint16_t step;
+    uint16_t i;
     uint16_t value;
 } typedef LFO_t;
 
 struct {
     _Q15 data[LPF_FILTER_SIZE];
     _Q15 last;
-    uint16_t n;
+    _Q15 beta;
 } typedef LP_Filter_t;
 
 struct {
     Note_State_t state;
     Env_t env;
+    LFO_t lfo;
     
     uint16_t step, n;
     uint8_t channel, velocity;
@@ -59,7 +63,7 @@ uint16_t Map_Func(uint8_t);
 void Note_On(Synth_t*, MIDI_Msg_t*);
 void Note_Off(Synth_t*, MIDI_Msg_t*);
 
-void Process_Envelope(Synth_t*);
+void Process_Env_LFO(Synth_t*);
 void Process_LFO(Synth_t*);
 
 int8_t Get_Active_Note_Index(Synth_t*, uint16_t);
@@ -68,6 +72,7 @@ uint16_t Synth_Next_Sample(Synth_t*);
 
 _Q15 _Q15mpy(_Q15,_Q15);
 _Q15 _Q15square(_Q15);
+_Q15 _Q15square_Positive(_Q15);
 _Q15 _Q15saw(_Q15);
 _Q15 _Q15triangle(_Q15);
 

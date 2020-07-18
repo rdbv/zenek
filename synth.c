@@ -54,8 +54,9 @@ inline void Note_On(Synth_t* synth, MIDI_Msg_t* msg)
             note->step = Map_Func(msg->data[0]);
             note->n = 0;
             note->channel = msg->channel;
-            note->velocity = msg->data[1];
+            note->velocity = (msg->data[1]) > 127 ? 127 : msg->data[1];
             note->env.attack = 0;
+            note->env.release = FIXED_PLUS_ONE;
             break;
         }
         
@@ -69,31 +70,41 @@ inline void Note_Off(Synth_t* synth, MIDI_Msg_t* msg)
         
         if(active_note->step == Map_Func(msg->data[0]) 
         && active_note->channel == msg->channel) {  
-            //active_note->env.release = active_note->env.attack;
+            
+            active_note->env.release = active_note->env.attack;
             active_note->state = NOTE_COOLDOWN;
         }   
     } 
 }
 
-inline void Process_Envelope(Synth_t* synth)
+inline void Process_Env_LFO(Synth_t* synth)
 {
     /* Go over all note slots */
     for(uint8_t i=0;i<MAX_KEYS_PRESSED;++i) {
         Active_Note_t *note = &synth->active[i];
         if(note->step > 0) {
+            
+            if(synth->lfo.step != 0 ) {
+                note->lfo.value = _Q15abs(_Q15sin(note->lfo.i));
+                note->lfo.i += synth->lfo.step; 
+            }
+            
             /* Attack will rise a bit almost to 0.99 
                but we don't want to overshoot and end with ~ -0.99 */
-            if(note->env.attack < FIXED_PLUS_ONE - synth->env.attack)
+            if(note->env.attack < (FIXED_PLUS_ONE - synth->env.attack) ) 
                 note->env.attack += synth->env.attack;
             
             /* If note was released, subtract from release for note 
-               until next subtraction dont effect with ending with 
+               until next subtraction don't effect with ending with 
                negative value - then just set 0 */
             if(note->state == NOTE_COOLDOWN) {
                 if(note->env.release >= synth->env.release)
                     note->env.release -= synth->env.release;
-                else
+                else {
                     note->env.release = 0;
+                    note->lfo.value = 0;
+                    note->lfo.i = 0;
+                }
             }     
         }
     }    
@@ -112,22 +123,36 @@ inline uint16_t Synth_Next_Sample(Synth_t* synth)
         
         /* If step != 0 then note is playing now */
         if(note->step != 0) {
+            
+            /* Select waveform and increment phase acc */
             tmp_sample = (*channels[note->channel])(note->n);
             note->n += note->step;
 
-            tmp_sample = _Q15mpy(tmp_sample, note->velocity * 255 );
-            tmp_sample = _Q15mpy(tmp_sample, note->env.attack);
+            /* Multiply sample by velocity, attack, and release */
+            if(synth->lfo.step != 0)
+                tmp_sample = _Q15mpy(tmp_sample, note->lfo.value);
             
+            //tmp_sample = _Q15mpy(tmp_sample, note->velocity * 255);
+            //tmp_sample = _Q15mpy(tmp_sample, note->env.attack);
             //tmp_sample = _Q15mpy(tmp_sample, note->env.release);
             
-            sample += tmp_sample / (note_count + 1);
+            /* Divide by max available notes at one moment, to ensure that we 
+             * don't overshoot with Q15 range - this is probably not best idea 
+             * because we are losing much on sound dynamics - but for now :) 
+             */
+            sample += tmp_sample / MAX_KEYS_PRESSED;
 
-            if(note->state == NOTE_COOLDOWN) {
-                note->step = 0;
-                note->state = NOTE_IDLE;  
+            /* Released note - eventually wait for release reach 0 */
+            if(note->state == NOTE_COOLDOWN && note->env.release == 0) {
+                
+                    note->step = 0;
+                    note->state = NOTE_IDLE; 
+                
             }
         }
     }
+    
+    //synth->lpf.last = synth->lpf.last - (_Q15mpy(synth->lpf.beta, synth->lpf.last- sample));
 
     return sample;
 }
@@ -151,6 +176,15 @@ inline _Q15 __attribute__((always_inline)) _Q15square(_Q15 x)
     else
         return FIXED_PLUS_ONE;
 }
+
+inline _Q15 __attribute__((always_inline)) _Q15square_Positive(_Q15 x)
+{
+    if(x >= 0)
+        return FIXED_PLUS_ONE;
+    else
+        return 0;
+}
+
 
 inline _Q15 __attribute__((always_inline)) _Q15saw(_Q15 x)
 {

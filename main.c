@@ -19,15 +19,25 @@ MIDI_Rx_t MIDI = {
 Synth_t Synth = {
 
     .env = {
-        .attack = 32 * 8,
-        .release = 32 * 3
+        .attack = 32 * 32,
+        .release = 32 * 32
     }, 
 
+    .lfo = {
+        .i = 0, 
+        .value = 0,
+        .step = 256
+    }, 
+    
     .lpf = {
-        .n = 0
+        
     }
+    
 };
         
+/*
+ * Just recieve MIDI packet and enable, or disable note
+ */
 void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt()
 {    
     MIDI_Recv_Packet(&MIDI);    
@@ -42,10 +52,10 @@ void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt()
         Note_Off(&Synth, &MIDI.msg);
     }
     
-    
+      
 #if UART_DEBUG_MIDI == 1
     
-    printf("C:%02x B0:%04d B1:%02x C:%02d\r\n", 
+    printf("Ch:%02x B0:%04d B1:%02x Act:%02d\r\n", 
         MIDI.msg.cmd, 
         MIDI.msg.data[0],
         MIDI.msg.data[1],
@@ -54,26 +64,33 @@ void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt()
     
 #endif
 
-    //if(U1STAbits.OERR == 1)
-    //    U1STAbits.OERR = 0;
-
     IFS0bits.U1RXIF = 0;
 }
 
+/*
+ * Called at DAC sampling rate, here - 48 kHz
+ */
 void __attribute__((interrupt, no_auto_psv)) _DAC1LInterrupt()
 {
     DAC1LDAT = Synth_Next_Sample(&Synth);
     IFS4bits.DAC1LIF = 0;
 }
 
+/*
+ * Called at 1 kHz rate
+ */
 void __attribute__((interrupt, no_auto_psv)) _T2Interrupt()
 {   
-    Process_Envelope(&Synth);    
+    Process_Env_LFO(&Synth);    
     IFS0bits.T2IF = 0;
 }
 
 extern void test();
 
+/*
+ * Just run all peripherals
+ * Whole synth code is running in interrupts
+ */
 int main(void) 
 {
     /* 
@@ -88,6 +105,8 @@ int main(void)
     Init_UART();    
     Init_GPIO();
 
+    Synth.lpf.beta = _Q15ftoi(0.25);
+    
     while(1) 
     {
 
